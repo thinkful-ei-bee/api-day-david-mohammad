@@ -34,6 +34,8 @@ const store = (function(){
     this.searchTerm = term;
   };
 
+  const error = null;
+
   return {
     items: [],
     hideCheckedItems: false,
@@ -45,6 +47,7 @@ const store = (function(){
     setSearchTerm,
     setItemIsEditing,
     findAndUpdate,
+    error,
   };
   
 }());

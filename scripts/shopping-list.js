@@ -59,6 +59,12 @@ const shoppingList = (function(){
   
     // insert that HTML into the DOM
     $('.js-shopping-list').html(shoppingListItemsString);
+
+    if(store.error) {
+      $('.error').html(`<p>Error code: ${store.error.code}. ${store.error.message}</p><button class="close-error">Close</button>`);
+    } else {
+      $('.error').html('');
+    }
   }
   
   
@@ -68,10 +74,14 @@ const shoppingList = (function(){
       const newItemName = $('.js-shopping-list-entry').val();
       $('.js-shopping-list-entry').val('');
       api.createItem(newItemName)
-        .then (res => res.json())
         .then (item => { store.addItem(item);
           render();}
-        );});
+        )
+        .catch(error => {
+          store.error = error;
+          render();
+        });      
+    });
   }
   
   function getItemIdFromElement(item) {
@@ -88,6 +98,10 @@ const shoppingList = (function(){
         .then(() => {
           store.findAndUpdate(id, {checked: !item.checked});
           render();
+        })
+        .catch(error => {
+          store.error = error;
+          render();
         });
     });
   }
@@ -99,11 +113,14 @@ const shoppingList = (function(){
       const id = getItemIdFromElement(event.currentTarget);
       // delete the item
       api.deleteItem(id)
-        .then(store.findAndDelete(id)) => {
-          
-        };
-      // render the updated shopping list
-      render();
+        .then( () => {
+          store.findAndDelete(id);
+          render();
+        })
+        .catch(error => {
+          store.error = error;
+          render();
+        });
     });
   }
   
@@ -117,8 +134,11 @@ const shoppingList = (function(){
           store.findAndUpdate(id, {name: itemName});
           store.setItemIsEditing(id, false);
           render();
+        })
+        .catch(error => {
+          store.error = error;
+          render();
         });
-      
     });
   }
   
@@ -145,6 +165,13 @@ const shoppingList = (function(){
     });
   }
   
+  function handleCloseError() {
+    $('.error').on('click', '.close-error', () => {
+      store.error = null;
+      render();
+    });
+  }
+
   function bindEventListeners() {
     handleNewItemSubmit();
     handleItemCheckClicked();
@@ -153,6 +180,7 @@ const shoppingList = (function(){
     handleToggleFilterClick();
     handleShoppingListSearch();
     handleItemStartEditing();
+    handleCloseError();
   }
 
   // This object contains the only exposed methods from this module:

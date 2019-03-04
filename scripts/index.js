@@ -12,7 +12,15 @@ $(document).ready(function() {
       shoppingList.render();
     });
 
-
 });
+
+api.getItems()
+  .then(res => res.json())
+  .then((items) => {
+    const item = items[0];
+    return api.updateItem(item.id, { name: 'foobar', checked: true, height: 5 });
+  })
+  .then(res => res.json())
+  .then(() => console.log('updated!'));
 
 

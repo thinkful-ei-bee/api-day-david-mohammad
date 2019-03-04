@@ -9,8 +9,7 @@ $(document).ready(function() {
     .then(res => res.json())
     .then((items) => {
       items.forEach((item) => store.addItem(item));
-      shoppingList.render();
-      
+      shoppingList.render();      
     });
 
 });
